@@ -1,0 +1,68 @@
+<configuration scan="true" scanPeriod="60 seconds">
+	<property resource="application.properties" />
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%date %-5level [%thread] [%class{0}] [line : %line] : %X{request-id} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<prudent>false</prudent>
+		<file>${logging.path}/ubs-client-server.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${logging.path}/ubs-client-server.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>%date %-5level [%thread] [%class{0}] [line : %line ] : %X{request-id} -
+				%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="JOB-FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logging.path}/ubs-client-job.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${logging.path}/ubs-client-job.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%date %-5level [%thread] [%class{0}] [line : %line ] -
+				%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="JOB-FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+		<includeCallerData>true</includeCallerData>
+		<appender-ref ref="JOB-FILE" />
+	</appender>
+	<logger name="JOB-FILE-LOGGER" level="info" additivity="false">
+		<appender-ref ref="JOB-FILE_ASYNC" />
+	</logger>
+
+	<appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+		<includeCallerData>true</includeCallerData>
+		<appender-ref ref="FILE" />
+	</appender>
+
+<!-- if you want parameter to be printed />
+	<logger name="org.hibernate.type" level="ALL" />
+	<logger name="org.hibernate" level="DEBUG"/> -->
+	
+
+	<root level="INFO">
+		<appender-ref ref="ASYNC" />
+	</root>
+</configuration>
